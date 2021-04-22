@@ -1,0 +1,281 @@
+DROP TABLE WORKDESK.OW_WORKSHEET CASCADE CONSTRAINTS;
+
+CREATE TABLE WORKDESK.OW_WORKSHEET
+(
+  TK_OW              NUMBER(7)                  NOT NULL,
+  TYPE               VARCHAR2(56 BYTE)          NOT NULL,
+  DESCRIPTION        VARCHAR2(256 BYTE)         NOT NULL,
+  SET_WRKSHT_NUM     NUMBER(7),
+  VERSION_NUM        NUMBER(5)                  NOT NULL,
+  STATUS             VARCHAR2(30 BYTE)          NOT NULL,
+  DEST_TK_CNTRY      NUMBER(5),
+  INSP_TK_CNTRY      NUMBER(5),
+  PLANT              VARCHAR2(100 BYTE),
+  CO_TK_ORG          NUMBER(15),
+  CURRENCY_CODE      VARCHAR2(15 BYTE)          NOT NULL,
+  WT_UOM             VARCHAR2(6 BYTE)           NOT NULL,
+  CREATION_DATE      DATE                       NOT NULL,
+  CREATED_BY         NUMBER(15)                 NOT NULL,
+  LAST_UPDATE_DATE   DATE,
+  LAST_UPDATED_BY    NUMBER(15),
+  INIT_TK_OW         NUMBER(7)                  NOT NULL,
+  OWNER              NUMBER(15),
+  DEST_PORT          VARCHAR2(50 BYTE),
+  NOTIFY_SUBJECT     VARCHAR2(100 BYTE),
+  ODS                VARCHAR2(1 BYTE)           DEFAULT 'N'                   NOT NULL,
+  POSITION_PURCHASE  VARCHAR2(1 BYTE)           DEFAULT 'N'                   NOT NULL,
+  PURCHASE_DECISION  VARCHAR2(128 BYTE)         DEFAULT 'UNPOSITIONED'        NOT NULL,
+  PROVINCE           NUMBER(5)                  DEFAULT 0                     NOT NULL,
+  TK_SUP_OFFER       NUMBER(15),
+  NEW_OW             CHAR(1 BYTE),
+  ORIG_TK_CNTRY      NUMBER(5)
+)
+TABLESPACE WORKDESK_DATA
+PCTUSED    40
+PCTFREE    10
+INITRANS   1
+MAXTRANS   255
+STORAGE    (
+            INITIAL          1M
+            NEXT             40K
+            MINEXTENTS       1
+            MAXEXTENTS       UNLIMITED
+            PCTINCREASE      0
+            FREELISTS        1
+            FREELIST GROUPS  1
+            BUFFER_POOL      DEFAULT
+           )
+LOGGING 
+NOCOMPRESS 
+NOCACHE;
+
+COMMENT ON TABLE WORKDESK.OW_WORKSHEET IS 'This table includes the header information for worksheets/templates created through Order Workdesk.';
+
+COMMENT ON COLUMN WORKDESK.OW_WORKSHEET.TK_OW IS 'This is the id for the Worksheet/Template.';
+
+COMMENT ON COLUMN WORKDESK.OW_WORKSHEET.TYPE IS 'Worksheet Type (Template or Worksheet)';
+
+COMMENT ON COLUMN WORKDESK.OW_WORKSHEET.DESCRIPTION IS 'Description - Description/Name for the worksheet/template.';
+
+COMMENT ON COLUMN WORKDESK.OW_WORKSHEET.SET_WRKSHT_NUM IS 'Worksheet Number to identify the Worksheet.';
+
+COMMENT ON COLUMN WORKDESK.OW_WORKSHEET.VERSION_NUM IS 'Version Number';
+
+COMMENT ON COLUMN WORKDESK.OW_WORKSHEET.STATUS IS 'Status of the Worksheet (Published, etc)';
+
+COMMENT ON COLUMN WORKDESK.OW_WORKSHEET.DEST_TK_CNTRY IS 'Destination Country - This is the destination country.';
+
+COMMENT ON COLUMN WORKDESK.OW_WORKSHEET.INSP_TK_CNTRY IS 'Inspected For - This is the inspected for country.';
+
+COMMENT ON COLUMN WORKDESK.OW_WORKSHEET.CO_TK_ORG IS 'Company';
+
+COMMENT ON COLUMN WORKDESK.OW_WORKSHEET.CREATION_DATE IS 'Date when record was created.';
+
+COMMENT ON COLUMN WORKDESK.OW_WORKSHEET.CREATED_BY IS 'User id   of the person that created the record.';
+
+COMMENT ON COLUMN WORKDESK.OW_WORKSHEET.LAST_UPDATE_DATE IS 'Date when record was last updated.';
+
+COMMENT ON COLUMN WORKDESK.OW_WORKSHEET.LAST_UPDATED_BY IS 'User id    of the person that last updated the record.';
+
+COMMENT ON COLUMN WORKDESK.OW_WORKSHEET.PROVINCE IS 'State or province from which product originates.';
+
+
+CREATE UNIQUE INDEX WORKDESK.PK_OW_WORKSHEET ON WORKDESK.OW_WORKSHEET
+(TK_OW)
+LOGGING
+TABLESPACE WORKDESK_INDEX
+PCTFREE    10
+INITRANS   2
+MAXTRANS   255
+STORAGE    (
+            INITIAL          1M
+            NEXT             40K
+            MINEXTENTS       1
+            MAXEXTENTS       UNLIMITED
+            PCTINCREASE      0
+            FREELISTS        1
+            FREELIST GROUPS  1
+            BUFFER_POOL      DEFAULT
+           );
+
+ALTER TABLE WORKDESK.OW_WORKSHEET ADD (
+  CONSTRAINT PK_OW_WORKSHEET
+  PRIMARY KEY
+  (TK_OW)
+  USING INDEX WORKDESK.PK_OW_WORKSHEET
+  ENABLE VALIDATE);
+
+
+CREATE INDEX WORKDESK.I_OW_WORKSHEET_INIT_TK_OW ON WORKDESK.OW_WORKSHEET
+(INIT_TK_OW)
+LOGGING
+TABLESPACE WORKDESK_INDEX
+PCTFREE    10
+INITRANS   2
+MAXTRANS   255
+STORAGE    (
+            INITIAL          1M
+            NEXT             40K
+            MINEXTENTS       1
+            MAXEXTENTS       UNLIMITED
+            PCTINCREASE      0
+            FREELISTS        1
+            FREELIST GROUPS  1
+            BUFFER_POOL      DEFAULT
+           );
+
+CREATE INDEX WORKDESK.OW_WORKSHEET_IDX1 ON WORKDESK.OW_WORKSHEET
+(OWNER)
+LOGGING
+TABLESPACE WORKDESK_DATA
+PCTFREE    10
+INITRANS   2
+MAXTRANS   255
+STORAGE    (
+            INITIAL          40K
+            NEXT             40K
+            MINEXTENTS       1
+            MAXEXTENTS       UNLIMITED
+            PCTINCREASE      0
+            FREELISTS        1
+            FREELIST GROUPS  1
+            BUFFER_POOL      DEFAULT
+           );
+
+CREATE INDEX WORKDESK.OW_WS_I21 ON WORKDESK.OW_WORKSHEET
+(SET_WRKSHT_NUM)
+LOGGING
+TABLESPACE WORKDESK_DATA
+PCTFREE    10
+INITRANS   2
+MAXTRANS   255
+STORAGE    (
+            INITIAL          40K
+            NEXT             40K
+            MINEXTENTS       1
+            MAXEXTENTS       UNLIMITED
+            PCTINCREASE      0
+            FREELISTS        1
+            FREELIST GROUPS  1
+            BUFFER_POOL      DEFAULT
+           );
+
+CREATE OR REPLACE TRIGGER WORKDESK.OW_WORKSHEET_ATIS_INTEG_TR_AI
+AFTER UPDATE OF STATUS ON WORKDESK.OW_WORKSHEET FOR EACH ROW
+WHEN (NEW.STATUS = 'PUBLISHED' AND NEW.TYPE = 'WORKSHEET' AND NEW.NEW_OW = 'Y')
+BEGIN
+
+WORKDESK.APX_WOKDSK_PO_TOOLKIT.INSERTA_ATISPROD_WORKSHEET(:NEW.TK_OW,:NEW.SET_WRKSHT_NUM);
+
+
+END OW_WORKSHEET_ATIS_INTEG_TR_AI;
+/
+
+
+CREATE OR REPLACE TRIGGER WORKDESK.OW_WORKSHEET_SET_DESC_TRG_BIU 
+    BEFORE UPDATE OR INSERT ON WORKDESK.OW_WORKSHEET FOR EACH ROW
+DECLARE
+BEGIN
+    IF TRIM(:NEW.DESCRIPTION) IS NULL THEN
+        :NEW.DESCRIPTION := APX_WOKDSK_PO_TOOLKIT.PO_SET_SUPPLIER_DESCRIPTION(:NEW.SET_WRKSHT_NUM);
+    END IF;     
+END OW_WORKSHEET_SET_DESC_TRG_BIU;
+/
+
+
+CREATE OR REPLACE TRIGGER WORKDESK.WORKSHEET_B2B
+  BEFORE UPDATE OF status ON WORKDESK.OW_WORKSHEET FOR EACH ROW
+WHEN (
+NEW.status = 'PUBLISHED'
+      )
+DECLARE
+
+v_cust number;
+v_vendor number;
+
+BEGIN
+
+  select distinct cust_account_id
+  into v_cust
+  from ow_sale_ord
+  where tk_ow = :NEW.tk_ow
+  and rownum = 1;
+  
+  select distinct vendor_id
+  into v_vendor
+  from ow_pur_ord
+  where tk_ow = :NEW.tk_ow
+  and rownum = 1;
+ 
+  if v_cust > 0 and v_vendor > 0 then
+      RAISE_APPLICATION_ERROR(-20001, 'You can not publish a BACK TO BACK worksheet. Please clear either the Purchase or Sale information.');
+  end if;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE_APPLICATION_ERROR(-20002, sqlerrm || ' - TK_OW: ' || :NEW.tk_ow || ' - CUSTOMER: ' || v_cust || ' - VENDOR: ' ||v_vendor);
+END;
+/
+
+
+CREATE OR REPLACE TRIGGER WORKDESK.WORKSHEET_CREDIT_HOLD
+ BEFORE 
+ UPDATE
+ ON WORKDESK.OW_WORKSHEET  REFERENCING OLD AS OLD NEW AS NEW
+ FOR EACH ROW
+WHEN (
+NEW.status = 'PUBLISHED'
+      )
+DECLARE
+
+v_cust number;
+v_crdit_hold Varchar2(5);
+
+BEGIN
+
+  select distinct cust_account_id
+  into v_cust
+  from ow_sale_ord
+  where tk_ow = :NEW.tk_ow
+  and rownum = 1;
+
+  if v_cust > 0  then
+
+    select credit_hold
+    into v_crdit_hold
+    from apps_orafsys.HZ_CUSTOMER_PROFILES
+    where cust_account_id = v_cust 
+    AND ROWNUM = 1;
+
+     if v_crdit_hold = 'Y' then
+       RAISE_APPLICATION_ERROR(-20999, 'The customer you want to use was put on hold by the credit department.');
+     end if;
+  end if;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE_APPLICATION_ERROR(-20002, sqlerrm || ' - TK_OW: ' || :NEW.tk_ow || ' - CUSTOMER: ' || v_cust);
+END;
+/
+
+
+CREATE OR REPLACE PUBLIC SYNONYM OW_WORKSHEET FOR WORKDESK.OW_WORKSHEET;
+
+
+ALTER TABLE WORKDESK.OW_WORKSHEET ADD (
+  CONSTRAINT FK_OW_STATUS_WORKSHEET 
+  FOREIGN KEY (STATUS) 
+  REFERENCES WORKDESK.OW_WS_STATUS (STATUS)
+  ENABLE VALIDATE
+,  CONSTRAINT FK_OW_WS_TYPE_WORKSHEET 
+  FOREIGN KEY (TYPE) 
+  REFERENCES WORKDESK.OW_WS_TYPE (TYPE)
+  ENABLE VALIDATE
+,  CONSTRAINT FK_PURCHASE_DECISION 
+  FOREIGN KEY (PURCHASE_DECISION) 
+  REFERENCES WORKDESK.PURCHASE_DECISION (DECISION_TYPE)
+  ENABLE VALIDATE);
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON WORKDESK.OW_WORKSHEET TO OMS;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON WORKDESK.OW_WORKSHEET TO PUBLIC;

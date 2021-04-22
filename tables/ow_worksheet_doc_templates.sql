@@ -1,0 +1,47 @@
+DROP TABLE WORKDESK.OW_WORKSHEET_DOC_TEMPLATES CASCADE CONSTRAINTS;
+
+CREATE TABLE WORKDESK.OW_WORKSHEET_DOC_TEMPLATES
+(
+  TEMPLATE_ID             VARCHAR2(500 BYTE),
+  TEMPLATE_TYPE           VARCHAR2(500 BYTE),
+  TEMPLATE_DOC_TYPE       VARCHAR2(10 BYTE),
+  TEMPLATE_FILE_NAME      VARCHAR2(500 BYTE),
+  TEMPLATE_NAME_FOR_ITEM  VARCHAR2(500 BYTE),
+  TEMPLATE_BLOB           BLOB,
+  ORDER_TYPE              VARCHAR2(50 BYTE)
+)
+LOB (TEMPLATE_BLOB) STORE AS BASICFILE (
+  TABLESPACE  WORKDESK_DATA
+  ENABLE      STORAGE IN ROW
+  CHUNK       8192
+  RETENTION
+  NOCACHE
+  LOGGING
+      STORAGE    (
+                  INITIAL          40K
+                  NEXT             40K
+                  MINEXTENTS       1
+                  MAXEXTENTS       UNLIMITED
+                  PCTINCREASE      0
+                  FREELISTS        1
+                  FREELIST GROUPS  1
+                  BUFFER_POOL      DEFAULT
+                 ))
+TABLESPACE WORKDESK_DATA
+PCTUSED    40
+PCTFREE    10
+INITRANS   1
+MAXTRANS   255
+STORAGE    (
+            INITIAL          40K
+            NEXT             40K
+            MINEXTENTS       1
+            MAXEXTENTS       UNLIMITED
+            PCTINCREASE      0
+            FREELISTS        1
+            FREELIST GROUPS  1
+            BUFFER_POOL      DEFAULT
+           )
+LOGGING 
+NOCOMPRESS 
+NOCACHE;
