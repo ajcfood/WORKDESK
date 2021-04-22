@@ -1,0 +1,84 @@
+DROP PACKAGE WORKDESK.APX_WOKDSK_AOP_TOOLKIT;
+
+CREATE OR REPLACE PACKAGE WORKDESK.APX_WOKDSK_AOP_TOOLKIT AS
+FUNCTION GET_PO_PRINT_QUERY(
+p_tk_ow             NUMBER,
+p_query_type        VARCHAR2,
+p_tk_contract       NUMBER default null
+) RETURN CLOB;
+PROCEDURE GET_UNIQUE_UOM(p_tk_ow NUMBER,v_status VARCHAR2, v_uom OUT VARCHAR2, v_uom_flag OUT NUMBER);
+PROCEDURE GET_UNIQUE_PER(p_tk_ow NUMBER,v_status VARCHAR2, v_per OUT VARCHAR2, v_per_flag OUT NUMBER);
+FUNCTION GET_UOM_FOR_TOTALS(p_tk_ow NUMBER,p_status VARCHAR2) RETURN VARCHAR2;
+FUNCTION FORMAT_PRICE_DECIMALS(p_pur_ext in NUMBER) RETURN VARCHAR2;
+FUNCTION GET_DATES_FOR_CONTRACT(p_tk_contract NUMBER,p_status VARCHAR2) RETURN sys_refcursor;
+FUNCTION GET_CONTRACT_PRINT_QUERY(p_tk_contract NUMBER) RETURN CLOB;
+FUNCTION GET_CONTRACT_PRINT_QUERY_REST(p_tk_contract NUMBER,p_tk_ow NUMBER) RETURN CLOB;
+FUNCTION GET_CONTRACT_AND_WRKSHT_DATA(p_tk_ow NUMBER) RETURN sys_refcursor;
+FUNCTION GET_MISC_CHARGES(p_tk_ow NUMBER,p_set_wrksht_num NUMBER,p_status VARCHAR2,p_pre_version_num NUMBER) RETURN sys_refcursor;
+FUNCTION GET_MISC_CHARGES_CONTRACT(p_tk_ow NUMBER) RETURN sys_refcursor;
+FUNCTION GET_SUPPLIER_NAME(p_vendor_id NUMBER) RETURN VARCHAR2;
+FUNCTION GET_SUPPLIER_NOTES(p_tk_ow NUMBER, p_status VARCHAR2, p_note_type VARCHAR2) RETURN VARCHAR2;
+FUNCTION RET_COLOR(p_vers NUMBER,p_color VARCHAR2 DEFAULT '#E7E6E6') RETURN VARCHAR2;
+FUNCTION GET_DEST_PORT(p_tk_port VARCHAR2 ) RETURN VARCHAR2;
+FUNCTION GET_PURCHASE_TERMS(p_pur_terms VARCHAR2)RETURN VARCHAR2;
+FUNCTION GET_PROVINCE_NAME(p_tk_prov VARCHAR2)RETURN VARCHAR2;
+FUNCTION GET_DEF_COUNTRY_NAME(p_country_name VARCHAR2) RETURN VARCHAR2;
+FUNCTION GET_CONTRACT_TOTALS(
+    p_tk_ow        NUMBER,
+    p_status       VARCHAR2,
+    p_total        VARCHAR2
+) RETURN NUMBER;
+PROCEDURE GET_TOTALS(
+    p_tk_ow        NUMBER,
+    p_status       VARCHAR2,
+    v_total_cases  OUT NUMBER,    
+    v_total_weight OUT NUMBER,   
+    v_total_price  OUT NUMBER,
+    v_total_pur    OUT NUMBER,
+    p_tk_contract      NUMBER default null         
+);
+FUNCTION GET_COUNTRY_NAME(
+p_tk_cntry      VARCHAR2 
+--tk_cntry_name OUT VACHAR2
+)RETURN VARCHAR2;
+FUNCTION GET_INCOTERM(
+p_incoterm      VARCHAR2 
+--p_incoterm_name OUT VARCHAR2
+)RETURN VARCHAR2;
+--FUNCTION GET_PO_PRINT_QUERY_SCREEN(
+--p_tk_org             NUMBER, 
+--p_purchase_date      DATE, 
+--p_ship_date          DATE,
+--p_vendor_id          NUMBER,
+--p_tk_cntry           NUMBER,
+--p_incoterm           NUMBER,
+--p_dest_country       NUMBER,
+--p_pur_terms          NUMBER,
+--p_tk_emp_purchaser   NUMBER,
+--p_tk_emp_coordinator NUMBER 
+--) RETURN CLOB;
+FUNCTION GET_INNER_QUERY(p_tk_ow NUMBER,p_set_wrksht_num NUMBER,p_status VARCHAR2,p_pre_version_num NUMBER) RETURN CLOB;
+FUNCTION GET_INNER_QUERY_CONTRACT(p_tk_ow NUMBER) RETURN sys_refcursor;
+FUNCTION GET_INNER_QUERY_CONTRACT_POS(p_tk_ow NUMBER, tk_contract NUMBER) RETURN sys_refcursor;
+FUNCTION GET_INNER_QUERY_CONTRACT_PROD(p_tk_ow NUMBER) RETURN sys_refcursor;
+PROCEDURE GET_COMPANY_DATA(
+p_tk_org          NUMBER,
+p_company_name    OUT VARCHAR2,
+p_company_address OUT VARCHAR2,
+p_company_city    OUT VARCHAR2,
+p_company_state   OUT VARCHAR2,
+p_company_zip     OUT VARCHAR2,
+p_company_country OUT VARCHAR2,
+p_company_tc_url  OUT VARCHAR2
+);
+PROCEDURE GET_EMPLOYEE_DATA(
+p_tk    NUMBER, 
+p_name  OUT VARCHAR2,
+p_phone OUT VARCHAR2,
+p_mail  OUT VARCHAR2
+);
+END APX_WOKDSK_AOP_TOOLKIT;
+/
+
+
+GRANT EXECUTE ON WORKDESK.APX_WOKDSK_AOP_TOOLKIT TO OMS;
